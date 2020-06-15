@@ -62,11 +62,16 @@
     /* 快应用特有相关 */
     "mp-weixin" : {
         /* 小程序特有相关 */
-        "appid" : "wxd73c7ee2d5d2a858",
+        "appid" : "wxa2e7a82439a0e0ec",
         "setting" : {
             "urlCheck" : false,
-            "postcss" : true
+            "postcss" : true,
+            "minified" : false
         },
-        "permission" : {}
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "你的位置信息将用于小程序位置接口的效果展示"
+            }
+        }
     }
 }

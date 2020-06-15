@@ -373,6 +373,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
 var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request.js */ 17));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _createForOfIteratorHelper(o) {if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) {var i = 0;var F = function F() {};return { s: F, n: function n() {if (i >= o.length) return { done: true };return { done: false, value: o[i++] };}, e: function e(_e) {throw _e;}, f: F };}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}var it,normalCompletion = true,didErr = false,err;return { s: function s() {it = o[Symbol.iterator]();}, n: function n() {var step = it.next();normalCompletion = step.done;return step;}, e: function e(_e2) {didErr = true;err = _e2;}, f: function f() {try {if (!normalCompletion && it.return != null) it.return();} finally {if (didErr) throw err;}} };}function _unsupportedIterableToArray(o, minLen) {if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(n);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);}function _arrayLikeToArray(arr, len) {if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {arr2[i] = arr[i];}return arr2;}var _default =
 {
   data: function data() {
@@ -424,8 +426,9 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
       isKeep: '', //收藏
       mastPic: '', //商品主图
       stock: '',
-      changeId: '' };
-
+      changeId: '',
+      priceArr: [] //价钱数组
+    };
   },
   onLoad: function onLoad(option) {var _this = this;
     // this.fundata[0].img = this.isKeep1
@@ -435,6 +438,7 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
     this.changeId = option.Pid;
     setTimeout(function () {
       _this.isCollection(option.id);
+      _this.browseHistory(option.id);
       if (option.spec && option.stock) {
         var arr = option.spec.split(",");
         for (var i = 0; i < arr.length; i++) {
@@ -444,7 +448,7 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
         _this.specClass = 'show';
         _this.joinTitle = '修改规格';
       }
-    }, 500);
+    }, 1000);
     //
     // //小程序隐藏返回按钮
     // this.showBack = false;
@@ -557,7 +561,7 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
             setTimeout(function () {
               uni.showToast({
                 title: '收藏商品成功',
-                icon: 'success' });
+                icon: 'none' });
 
             }, 300);
           } });
@@ -568,7 +572,6 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
           url: "/mall-portal/member/collection/deleteProduct?memberId=".concat(_that.userInfo.id, "&productId=").concat(_that.goodsData.id),
           method: 'POST',
           success: function success(res) {
-            console.log(res);
             _that.isKeep = _that.isKeep ? false : true;
             setTimeout(function () {
               uni.showToast({
@@ -604,6 +607,7 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
     toConfirmation: function toConfirmation() {
       var tmpList = [];
       var goods = { id: this.goodsData.id, img: '../../static/img/goods/p1.jpg', name: this.goodsData.name, spec: '规格:' + this.goodsData.spec[this.selectSpec], price: this.goodsData.price, number: this.goodsData.number };
+      console.log(goods);
       tmpList.push(goods);
       uni.setStorage({
         key: 'buylist',
@@ -631,15 +635,21 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
           allSpec.forEach(function (item, index) {
             array.push(item.value);
           });
+          // 放进空字符窜
           if (this.selectAlls.toString().indexOf(array.toString()) === -1) {
             this.selectAlls.push(array);
           }
-        }} catch (err) {_iterator.e(err);} finally {_iterator.f();}
-      console.log(this.selectArr);
+        }
+        // 按钮样式选择
+      } catch (err) {_iterator.e(err);} finally {_iterator.f();}for (var p = 0; p < this.goodsData1.spec[index].isSever.length; p++) {
+        this.goodsData1.spec[index].isSever[p] = false;
+      }
+      this.goodsData1.spec[index].isSever[index1] = true;
+      this.goodsData1.spec = Object.assign({}, this.goodsData1.spec);
       // 所选规格和所有规格进行匹配
       for (var k = 0; k < this.selectAlls.length; k++) {
         if (this.selectAlls[k].toString() === this.selectArr.toString()) {
-          this.designateProduct = this.specList[k];
+          this.designateProduct = this.specList[k]; //库存
           this.stock = this.designateProduct.stock;
         }
       }
@@ -697,7 +707,6 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
     },
     //服务弹窗
     showService: function showService() {
-      console.log('show');
       this.serviceClass = 'show';
     },
     //关闭服务弹窗
@@ -709,7 +718,6 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
     },
     //规格弹窗
     showSpec: function showSpec(fun) {
-      console.log('show');
       this.specClass = 'show';
       this.specCallback = fun;
     },
@@ -758,7 +766,6 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
               title: '提交中' });
 
             setTimeout(function () {
-              console.log(_that.designateProduct);
               uni.hideLoading();
               uni.showToast({
                 title: '加入购物车成功',
@@ -802,7 +809,6 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
               title: '提交中' });
 
             setTimeout(function () {
-              console.log(_that.designateProduct);
               uni.hideLoading();
               uni.showToast({
                 title: '修改规格成功正在为您跳转至之前页面',
@@ -874,15 +880,52 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
         } });
 
     },
+    // 增加浏览记录
+    browseHistory: function browseHistory(id) {
+      var time = new Date().valueOf();
+      var _that = this;
+      var Pid = id;
+      var obj = {
+        id: _that.goodsData.id, //id
+        memberId: _that.userInfo.id, //会员id
+        memberNickname: _that.userInfo.nickname, //会员名字
+        memberIcon: _that.goodsData.picSKU, //会员标识
+        productId: _that.goodsData.id, //产品id
+        productName: _that.goodsData.name, //产品名字
+        productPic: _that.mastPic,
+        productSubTitle: _that.goodsData.subTitle,
+        productPrice: _that.goodsData.price,
+        createTime: time //创建时间
+      };
+      console.log(obj);
+      (0, _request.default)({
+        url: '/mall-portal/member/readHistory/create',
+        method: 'POST',
+        data: {
+          id: _that.goodsData.id, //id
+          memberId: _that.userInfo.id, //会员id
+          memberNickname: _that.userInfo.nickname, //会员名字
+          memberIcon: _that.goodsData.picSKU, //会员标识
+          productId: _that.goodsData.id, //产品id
+          productName: _that.goodsData.name, //产品名字
+          productPic: _that.mastPic,
+          productSubTitle: _that.goodsData.subTitle,
+          productPrice: _that.goodsData.price,
+          createTime: time //创建时间
+        },
+        success: function success(res) {
+          console.log(res, "浏览接口");
+        } });
+
+    },
     getDetail: function getDetail(id) {
       var _that = this;
       var Pid = id;
       (0, _request.default)({
         url: '/mall-portal/portalproducts/selectdetails/' + Pid,
-        method: 'POST',
+        method: 'GET',
         success: function success(res) {
           var data = res.data.data;
-          console.log(data);
           // 参数设置
           _that.goodsData1.parameter = data.parameter;
           // 轮播图设置
@@ -892,39 +935,60 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../Tool/request
           var newImg = [];
           var spName = [];
           var spValue = [];
-          var firstP = JSON.parse(data.productResult[0].spData);
+          if (data.productResult[0].spData) {
+            var firstP = JSON.parse(data.productResult[0].spData);
+            // 商品标题相关数据
+            var _iterator3 = _createForOfIteratorHelper(firstP),_step3;try {for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {var i = _step3.value;
+                var sN = new Object(); //{}
+                sN.title = i.key; //key
+                sN.arr = [];
+                sN.isSever = [];
+                spName.push(sN);
+                // 获取所有商品的规格属性
+                var _iterator4 = _createForOfIteratorHelper(spData),_step4;try {for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {var g = _step4.value;
+                    var keys = JSON.parse(g.spData);var _iterator5 = _createForOfIteratorHelper(
+                    keys),_step5;try {for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {var y = _step5.value;
+                        if (y.key === sN.title) {
+                          if (sN.arr.indexOf(y.value) === -1) {
+                            sN.arr.push(y.value);
+                            sN.isSever.push(false);
+                          }
+                        }
+                      }} catch (err) {_iterator5.e(err);} finally {_iterator5.f();}
+                  }} catch (err) {_iterator4.e(err);} finally {_iterator4.f();}
+              }} catch (err) {_iterator3.e(err);} finally {_iterator3.f();}
+          }
+
           _that.specList = data.productResult;
           _that.goodsData = data.productResult[0];
+          // 获取最大最小价格
+          for (var m = 0; m < data.productResult.length; m++) {
+            if (data.productResult[m].price) {
+              _that.priceArr.push(data.productResult[m].price);
+            }
+          }
+          _that.priceArr.sort(function (a, b) {
+            return a - b;
+          });
+          console.log(_that.priceArr);
           // 服务参数
           _that.goodsData.serviceIds = data.productResult[0].serviceIds.split(',');
-          // console.log(_that.goodsData)
           // 轮播图
-          var _iterator3 = _createForOfIteratorHelper(imgs),_step3;try {for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {var i = _step3.value;newImg.push({ src: i });}} catch (err) {_iterator3.e(err);} finally {_iterator3.f();}
+          var _iterator6 = _createForOfIteratorHelper(imgs),_step6;try {for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {var _i = _step6.value;newImg.push({ src: _i });}} catch (err) {_iterator6.e(err);} finally {_iterator6.f();}
           _that.mastPic = data.picMap.pic;
           newImg.unshift({ src: data.picMap.pic });
           _that.swiperList = newImg;
-          // 商品标题相关数据
-          var _iterator4 = _createForOfIteratorHelper(firstP),_step4;try {for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {var _i = _step4.value;
-              var sN = new Object();
-              sN.title = _i.key;
-              sN.arr = [];
-              spName.push(sN);
-              // 获取所有商品的规格属性
-              var _iterator5 = _createForOfIteratorHelper(spData),_step5;try {for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {var g = _step5.value;
-                  var keys = JSON.parse(g.spData);var _iterator6 = _createForOfIteratorHelper(
-                  keys),_step6;try {for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {var y = _step6.value;
-                      if (y.key === sN.title) {
-                        if (sN.arr.indexOf(y.value) === -1) {
-                          sN.arr.push(y.value);
-                        }
-                      }
-                    }} catch (err) {_iterator6.e(err);} finally {_iterator6.f();}
-                }} catch (err) {_iterator5.e(err);} finally {_iterator5.f();}
-            }} catch (err) {_iterator4.e(err);} finally {_iterator4.f();}
           _that.goodsData1.spec = spName;
           _that.goodsData1.spec.map(function (item) {
             _that.selectArr.push('');
           });
+          // 把图片变成自适应
+          _that.goodsData.detailMobileHtml = _that.goodsData.detailMobileHtml.replace(/<p>/ig, '<p style="font-size: 15px; line-height: 25px;">').
+          replace(/<img([\s\w"-=\/\.:;]+)((?:(height="[^"]+")))/ig, '<img$1').
+          replace(/<img([\s\w"-=\/\.:;]+)((?:(width="[^"]+")))/ig, '<img$1').
+          replace(/<img([\s\w"-=\/\.:;]+)((?:(style="[^"]+")))/ig, '<img$1').
+          replace(/<img([\s\w"-=\/\.:;]+)((?:(alt="[^"]+")))/ig, '<img$1').
+          replace(/<img([\s\w"-=\/\.:;]+)/ig, '<img style="width: 100%;" $1');
         },
         fail: function fail() {
           uni.showToast({

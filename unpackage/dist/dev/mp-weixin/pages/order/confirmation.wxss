@@ -28,8 +28,7 @@
   width: 86%;
   padding: 20rpx 3%;
   margin: 30rpx auto 20rpx auto;
-  -webkit-box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
-          box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
   border-radius: 20rpx;
   display: -webkit-box;
   display: -webkit-flex;
@@ -68,8 +67,7 @@
   width: 86%;
   padding: 10rpx 3%;
   margin: 30rpx auto 20rpx auto;
-  -webkit-box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
-          box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
   border-radius: 20rpx;
 }
 .buy-list .row {
@@ -162,8 +160,7 @@
   width: 86%;
   padding: 10rpx 3%;
   margin: 30rpx auto 20rpx auto;
-  -webkit-box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
-          box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
   border-radius: 20rpx;
 }
 .order .row {
@@ -255,8 +252,7 @@
   width: 86%;
   padding: 10rpx 3%;
   margin: 30rpx auto 20rpx auto;
-  -webkit-box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
-          box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
   border-radius: 20rpx;
 }
 .detail .row {

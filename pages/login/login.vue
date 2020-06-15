@@ -133,7 +133,7 @@
 				//模板示例比对本地储存的用户信息，实际使用中请替换为上传服务器比对。
 				setTimeout(()=>{
 					wx.request({
-						url:'http://192.168.1.105:8201/mall-portal/sso/login',
+						url:'http://49fzbm.natappfree.cc/mall-portal/sso/login',
 						data:{
 							username:this.phoneNumber,
 							password:this.passwd

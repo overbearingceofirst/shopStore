@@ -385,7 +385,7 @@ var _request = _interopRequireDefault(__webpack_require__(/*! ../../../Tool/requ
             method: 'POST',
             data: {
               memberId: userId
-              // status:4
+              // status:
               // orderSn:"202005120102000023"
             },
             success: function success(res) {

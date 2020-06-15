@@ -115,8 +115,7 @@ page {
   -webkit-align-items: center;
           align-items: center;
   border-radius: 10rpx;
-  -webkit-box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.05);
-          box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.05);
+  box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.05);
   font-size: 36rpx;
   background-color: #f1f1f1;
   color: 333;
@@ -234,7 +233,6 @@ page {
           align-items: center;
   color: #fff;
   background-color: #FF5555;
-  -webkit-box-shadow: 0rpx 5rpx 10rpx rgba(0, 0, 0, 0.2);
-          box-shadow: 0rpx 5rpx 10rpx rgba(0, 0, 0, 0.2);
+  box-shadow: 0rpx 5rpx 10rpx rgba(0, 0, 0, 0.2);
 }
 

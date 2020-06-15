@@ -2,7 +2,7 @@
 	<view>
 		<!-- <view v-if="showHeader" class="status" :style="{position:headerPosition,top:statusTop}"></view> -->
 		<view class="goods-list">
-			<view class="tis" v-if="goodsList.length==0">购物车是空的哦~</view>
+			<view class="tis" v-if="goodsList.length==0">您还没有浏览商品呢~</view>
             <view class="row" v-for="(row,index) in goodsList" :key="index" >
 				<view class="title">
 					<view class="store">
@@ -10,30 +10,32 @@
 							<image src="../../../static/img/555555.jpg" mode=""></image>
 						</view>
 						<view class="name">
-							52积分
+							{{row.productPrice}}积分
 						</view>
 					</view>
 					
 					<view class="date">
-						2020-04-16 14:46:34
+						{{row.createTime}}
 					</view>
 				</view>
 					<!-- checkbox -->
 					<!-- 商品信息 -->
 					<view class="goods-info" @tap="toGoods(row)">
-						<view class="checkbox-box" @tap="selected(index)" v-if="shoCheck">
-							<view class="checkbox">
-								<view :class="[row.selected?'on':'']"></view>
+						
+							<view class="checkbox-box" @click.stop="selected(index)" v-if="shoCheck">
+								<view class="checkbox">
+									<view :class="[row.selected?'on':'']"></view>
+								</view>
 							</view>
-						</view>
+						
 						<view class="img">
-							<image :src="row.pic"></image>
+							<image :src="row.productPic"></image>
 						</view>
 						<view class="info">
-							<view class="title">{{row.name}}</view>
+							<view class="title">{{row.productName}}</view>
 							<!-- <view class="spec">{{row.spec}}</view> -->
 							<view class="price-number">
-								<view class="price">￥{{row.price}}</view>
+								<view class="price">{{row.productPrice}}积分</view>
 								<!-- <view class="number">
 									<view class="sub" @tap.stop="sub(index)">
 										<view class="icon jian"></view>
@@ -67,7 +69,7 @@
 </template>
 
 <script>
-
+	import request from '../../../Tool/request.js'
 	export default {
 		data() {
 			return {
@@ -90,7 +92,8 @@
 				//控制滑动效果
 				theIndex:null,
 				oldIndex:null,
-				isStop:false
+				isStop:false,
+				userInfo:null
 			}
 		},
 		onPageScroll(e){
@@ -106,8 +109,15 @@
 		    }, 1000);
 		},
 		onLoad() {
+			// 获取个人信息
+			this.getUsermsg()
+			uni.showLoading({
+				title: '加载中'
+			});
+			setTimeout(()=>{
+				this.getHistory()
+			},500)
 			//兼容H5下结算条位置
-			this.getHistory()
 			// #ifdef H5
 				this.footerbottom = document.getElementsByTagName('uni-tabbar')[0].offsetHeight+'px';
 			// #endif
@@ -141,14 +151,43 @@
 					this.goodsList[i].unshift(goods);
 				}
 			},
+			//获取本地的个人信息
+			getUsermsg(){
+				const _that = this
+				uni.getStorage({
+					key:'userMessage',
+					success(res){
+						_that.userInfo = res.data
+					}
+				})
+			},
 			//获取本地的浏览历史记录
 			getHistory(){
 				const _that = this
-				uni.getStorage({
-					key:'browHistory',
-					success(e){
-						_that.goodsList = e.data
-						console.log(e.data[0])
+				console.log(this.userInfo)
+				request({
+					url:'/mall-portal/member/readHistory/list',
+					method:'GET',
+					data:{
+						memberId:this.userInfo.id,//会员id
+					},
+					success(res){
+						_that.goodsList = res.data.data
+						uni.hideLoading();
+						for(let i = 0;i<_that.goodsList.length;i++){
+							_that.goodsList[i].selected = false
+							var year = new Date(_that.goodsList[i].createTime).toLocaleDateString().replace(/\//g, '-')
+							var h = new Date(_that.goodsList[i].createTime).getHours();
+							h=h < 10 ? ('0' + h) : h;
+							var minute = new Date(_that.goodsList[i].createTime).getMinutes();
+							minute = minute < 10 ? ('0' + minute) : minute;
+							var second=new Date(_that.goodsList[i].createTime).getSeconds();
+							second=second < 10 ? ('0' + second) : second;
+							console.log(h)
+							_that.goodsList[i].createTime = year +'    '+h+':'+minute+':'+second
+						}
+						Object.assign({},_that.goodsList)
+						console.log(_that.goodsList,"返回浏览数据")
 					}
 				})
 			},
@@ -244,28 +283,32 @@
 			},
 			//删除商品
 			deleteGoods(id){
-				let len = this.goodsList.length;
-				for(let i=0;i<len;i++){
-					if(id==this.goodsList[i].id){
-						this.goodsList.splice(i, 1);
-						break;
-					}
+				var arr =[]
+				const _that = this
+				for(let i =0;i<id.length;i++){
+					arr.push(id[i])
 				}
-				this.selectedList.splice(this.selectedList.indexOf(id), 1);
-				this.sum();
-				this.oldIndex = null;
-				this.theIndex = null;
+				request({
+					url:'/mall-portal/member/readHistory/delete?ids='+arr,
+					method:'DELETE',
+					success(res){
+						console.log(arr)
+						console.log(res)
+						// _that.sum();
+						_that.oldIndex = null;
+						_that.theIndex = null;
+					}
+				})
 			},
-			// 删除商品s
+			// 删除商品
 			deleteList(){
 				let len = this.selectedList.length;
-				while (this.selectedList.length>0)
-				{
-					this.deleteGoods(this.selectedList[0]);
+				if(this.selectedList.length>0){
+					this.deleteGoods(this.selectedList);
 				}
 				this.selectedList = [];
 				this.isAllselected = this.selectedList.length == this.goodsList.length && this.goodsList.length>0;
-				this.sum();
+				// this.sum();
 			},
 			// 选中商品
 			selected(index){
@@ -273,7 +316,7 @@
 				let i = this.selectedList.indexOf(this.goodsList[index].id);
 				i>-1?this.selectedList.splice(i, 1):this.selectedList.push(this.goodsList[index].id);
 				this.isAllselected = this.selectedList.length == this.goodsList.length;
-				this.sum();
+				// this.sum();
 			},
 			//全选
 			allSelect(){
@@ -285,7 +328,7 @@
 				}
 				this.selectedList = this.isAllselected?[]:arr;
 				this.isAllselected = this.isAllselected||this.goodsList.length==0?false : true;
-				this.sum();
+				// this.sum();
 			},
 			// 减少数量
 			sub(index){
@@ -293,12 +336,12 @@
 					return;
 				}
 				this.goodsList[index].number--;
-				this.sum();
+				// this.sum();
 			},
 			// 增加数量
 			add(index){
 				this.goodsList[index].number++;
-				this.sum();
+				// this.sum();
 			},
 			// 合计
 			sum(e,index){
@@ -314,6 +357,7 @@
 					}
 				}
 				this.sumPrice = this.sumPrice.toFixed(2);
+				console.log(this.sumPrice)
 			},
 			discard() {
 				//丢弃
@@ -496,6 +540,7 @@
 						image{
 							width: 22vw;
 							height: 22vw;
+							position: relative;
 						}
 					}
 					.info{

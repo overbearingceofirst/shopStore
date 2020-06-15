@@ -1776,7 +1776,7 @@ request;exports.default = _default;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var baseurl = "http://192.168.1.105:8201";var _default =
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var baseurl = "http://49fzbm.natappfree.cc";var _default =
 baseurl;exports.default = _default;
 
 /***/ }),

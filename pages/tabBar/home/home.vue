@@ -52,7 +52,7 @@
 				:key="index"
 				@tap="toCategory(row)"
 			>
-				<view class="img"><image src="/static/img/category/1.png"></image></view>
+				<view class="img"><image :src="row.icon"></image></view>
 				<view class="text">{{ row.name }}</view>
 			</view>
 		</view>
@@ -103,10 +103,10 @@
 				<view
 					class="product"
 					v-for="product in productList"
-					:key="product.goods_id"
+					:key="product.id"
 					@tap="toGoods(product)"
 				>
-					<image mode="widthFix" :src="product.img"></image>
+					<image mode="widthFix" :src="product.pic"></image>
 					<view class="name">{{ product.name }}</view>
 					<view class="info">
 						<view class="price">积分{{ product.price }}</view>
@@ -114,7 +114,7 @@
 					</view>
 				</view>
 			</view>
-			<!-- <view class="loading-text">{{ loadingText }}</view> -->
+			<view class="loading-text" v-if="last">{{ loadingText }}</view>
 		</view>
 	</view>
 </template>
@@ -224,7 +224,10 @@ export default {
 					price: '￥168'
 				}
 			],
-			loadingText: '正在加载...'
+			loadingText: '已经加载完毕了~',
+			pageSize: null,
+			pageNum: null,
+			last: false
 		};
 	},
 	onPageScroll(e) {
@@ -251,7 +254,7 @@ export default {
 	},
 	//上拉加载，需要自己在page.json文件中配置"onReachBottomDistance"
 	onReachBottom() {
-		console.log('5555555555')
+		this.productRecommendation(this.pageNum)
 		// uni.showToast({ title: '触发上拉加载' });
 		// let len = this.productList.length;
 		// if (len >= 40) {
@@ -274,6 +277,7 @@ export default {
 		// }
 	},
 	onLoad() {
+		// 加载数据的同时检测用户是否登录
 		this.getHomeconent()
 		// #ifdef APP-PLUS
 		this.nVueTitle = uni.getSubNVueById('homeTitleNvue');
@@ -431,10 +435,9 @@ export default {
 				method:'get',
 				success:function(res){
 					dataList = res.data.data
-					_that.swiperList = dataList.advertiseList
-					_that.niceGifts = dataList.hotProductList
-					_that.recommendList[0].chirldList = dataList.newProductList
-					console.log(dataList)
+					_that.swiperList = dataList.advertiseList   //轮播图数据
+					_that.niceGifts = dataList.hotProductList   //严选好礼数据
+					_that.recommendList[0].chirldList = dataList.newProductList   //严选好礼下面的新商品数据
 				},
 				fail(res){
 					uni.showToast({
@@ -443,14 +446,55 @@ export default {
 					})
 				}
 			}),
+			this.productRecommendation(0)
 			request({	
 				url:'/mall-portal/home/productCateList/'+ 0,
 				method:'get',
 				success(res){
-					_that.categoryList = res.data.data
+					_that.categoryList = res.data.data  //首页icon图标
 				}
 			})
-			
+		},
+		// 发现好物请求
+		productRecommendation(page){
+			const _that = this
+			_that.pageNum = page
+			// 当pageNum为0的时候，加载
+			if(_that.pageNum == 0){
+				_that.last = false
+				_that.pageNum = 0
+				_that.productList = []
+			}
+			// // 最后一页就停止操作
+			if(_that.last){
+				return false;
+			}
+			uni.showLoading({  
+				title: '加载中...'  
+			});
+			request({	
+				url:'/mall-portal/home/recommendProductList?pageNum='+_that.pageNum+'&pageSize=6',
+				method:'get',
+				success(res){
+					uni.hideLoading();
+					let resData = res.data.data
+					console.log(resData)
+					// 假设页数为最大是，停止加载
+					if(res.data.data.isLastPage == true){
+						_that.last = true	
+					}
+					console.log(resData)
+					var productListRes = null
+					if(_that.pageNum == 0){
+						productListRes = resData.list;
+					}else{
+						productListRes = _that.productList;
+						productListRes = productListRes.concat(resData.list)
+					}
+					_that.productList = productListRes
+					_that.pageNum += 1
+				}
+			})
 		},
 		//商品跳转
 		toGoods(e) {

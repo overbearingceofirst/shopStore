@@ -5,12 +5,15 @@
 	},
 	"setting": {
 		"urlCheck": false,
-		"postcss": true
+		"postcss": true,
+		"minified": false
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.9.2",
 	"appid": "wxa2e7a82439a0e0ec",
 	"projectname": "OLS",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,
@@ -25,8 +28,14 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": -1,
-			"list": []
+			"current": 0,
+			"list": [
+				{
+					"name": "首页",
+					"id": 0,
+					"pathName": "pages/tabBar/home/home"
+				}
+			]
 		}
 	}
 }

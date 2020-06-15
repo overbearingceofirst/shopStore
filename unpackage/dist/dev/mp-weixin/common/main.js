@@ -91,13 +91,14 @@ __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _default =
 {
   globalData: {
-    requestApi: 'http://192.168.1.105:8201',
+    requestApi: 'http://49fzbm.natappfree.cc',
     userID: '' },
 
   onLaunch: function onLaunch() {
     uni.getStorage({
       key: 'userMessage',
       success: function success(res) {
+        console.log(res);
         getApp().globalData.userID = res.data.id;
       } });
 

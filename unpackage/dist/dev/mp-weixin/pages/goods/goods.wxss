@@ -479,6 +479,9 @@ page {
   font-size: 26rpx;
   color: #999;
 }
+.description .title .wsncph {
+  width: 100% !important;
+}
 .footer {
   position: fixed;
   bottom: 0rpx;
@@ -504,6 +507,9 @@ page {
   display: flex;
   height: 80rpx;
   margin-left: -4%;
+  -webkit-justify-content: space-around;
+          justify-content: space-around;
+  width: 46%;
 }
 .footer .icons .box {
   width: 80rpx;
@@ -596,6 +602,8 @@ page {
 .popup .layer .content {
   width: 100%;
   padding: 20rpx 0;
+  overflow: auto;
+  height: 696rpx;
 }
 .popup .layer .btn {
   width: 100%;
@@ -944,6 +952,11 @@ page {
 }
 .pc .message .value {
   color: #909090;
+}
+.priceCss {
+  display: inline;
+  font-size: 28rpx;
+  margin-left: 5rpx;
 }
 .specStyle {
   width: 100%;

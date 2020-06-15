@@ -4,7 +4,7 @@
 		"ignore": []
 	},
 	"setting": {
-		"urlCheck": true,
+		"urlCheck": false,
 		"es6": true,
 		"postcss": true,
 		"preloadBackgroundData": false,
@@ -21,12 +21,14 @@
 			"ignore": [],
 			"disablePlugins": [],
 			"outputPath": ""
-		}
+		},
+		"useCompilerModule": true,
+		"userConfirmedUseCompilerModuleSwitch": false
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.9.2",
-	"appid": "wxd73c7ee2d5d2a858",
-	"projectname": "xf",
+	"appid": "wxa2e7a82439a0e0ec",
+	"projectname": "shopstore",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
 	"condition": {

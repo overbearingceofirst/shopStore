@@ -382,10 +382,12 @@ var _default = { data: function data() {return { showHeader: true, afterHeaderOp
       headerPosition: 'fixed', headerTop: null, statusTop: null, nVueTitle: null, city: '北京', currentSwiper: 0, token: '', // 轮播图片
       swiperList: [], arrHistory: [], // 分类菜单
       categoryList: [{ id: 1, name: '办公', img: '/static/img/category/1.png' }, { id: 2, name: '家电', img: '/static/img/category/2.png' }, { id: 3, name: '服饰', img: '/static/img/category/3.png' }, { id: 4, name: '日用', img: '/static/img/category/4.png' }, { id: 5, name: '蔬果', img: '/static/img/category/5.png' }, { id: 6, name: '运动', img: '/static/img/category/6.png' }, { id: 7, name: '书籍', img: '/static/img/category/7.png' }, { id: 8, name: '文具', img: '/static/img/category/8.png' }, { id: 9, name: '办公', img: '/static/img/category/1.png' }, { id: 10, name: '家电', img: '/static/img/category/2.png' }], Promotion: [], niceGifts: [], recommendList: [{ chirldList: [] }], //猜你喜欢列表
-      productList: [{ goods_id: 0, img: '/static/img/goods/p1.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 1, img: '/static/img/goods/p2.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 2, img: '/static/img/goods/p3.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 3, img: '/static/img/goods/p4.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 4, img: '/static/img/goods/p5.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 5, img: '/static/img/goods/p6.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 6, img: '/static/img/goods/p7.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 7, img: '/static/img/goods/p8.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 8, img: '/static/img/goods/p9.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 9, img: '/static/img/goods/p10.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '￥168' }], loadingText: '正在加载...' };}, onPageScroll: function onPageScroll(e) {//兼容iOS端下拉时顶部漂移
+      productList: [{ goods_id: 0, img: '/static/img/goods/p1.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 1, img: '/static/img/goods/p2.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 2, img: '/static/img/goods/p3.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 3, img: '/static/img/goods/p4.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 4, img: '/static/img/goods/p5.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 5, img: '/static/img/goods/p6.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 6, img: '/static/img/goods/p7.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 7, img: '/static/img/goods/p8.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 8, img: '/static/img/goods/p9.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '168' }, { goods_id: 9, img: '/static/img/goods/p10.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '￥168' }], loadingText: '已经加载完毕了~', pageSize: null, pageNum: null, last: false };}, onPageScroll: function onPageScroll(e) {//兼容iOS端下拉时顶部漂移
     this.headerPosition = e.scrollTop >= 0 ? "fixed" : "absolute";this.headerTop = e.scrollTop >= 0 ? null : 0;this.statusTop = e.scrollTop >= 0 ? null : -this.statusHeight + 'px';}, //下拉刷新，需要自己在page.json文件中配置开启页面下拉刷新 "enablePullDownRefresh": true
   onPullDownRefresh: function onPullDownRefresh() {var _that = this;uni.showLoading({ title: '刷新中', success: function success() {setTimeout(function () {uni.hideLoading();uni.showToast({ title: '刷新成功' });_that.getHomeconent();}, 3000);} });}, //上拉加载，需要自己在page.json文件中配置"onReachBottomDistance"
-  onReachBottom: function onReachBottom() {console.log('5555555555'); // uni.showToast({ title: '触发上拉加载' });
+  onReachBottom: function onReachBottom() {
+    this.productRecommendation(this.pageNum);
+    // uni.showToast({ title: '触发上拉加载' });
     // let len = this.productList.length;
     // if (len >= 40) {
     // 	this.loadingText = '到底了';
@@ -405,7 +407,9 @@ var _default = { data: function data() {return { showHeader: true, afterHeaderOp
     // 	};
     // 	this.productList.push(p);
     // }
-  }, onLoad: function onLoad() {var _this = this;
+  },
+  onLoad: function onLoad() {var _this = this;
+    // 加载数据的同时检测用户是否登录
     this.getHomeconent();
 
 
@@ -563,10 +567,9 @@ var _default = { data: function data() {return { showHeader: true, afterHeaderOp
         method: 'get',
         success: function success(res) {
           dataList = res.data.data;
-          _that.swiperList = dataList.advertiseList;
-          _that.niceGifts = dataList.hotProductList;
-          _that.recommendList[0].chirldList = dataList.newProductList;
-          console.log(dataList);
+          _that.swiperList = dataList.advertiseList; //轮播图数据
+          _that.niceGifts = dataList.hotProductList; //严选好礼数据
+          _that.recommendList[0].chirldList = dataList.newProductList; //严选好礼下面的新商品数据
         },
         fail: function fail(res) {
           uni.showToast({
@@ -575,13 +578,54 @@ var _default = { data: function data() {return { showHeader: true, afterHeaderOp
 
         } }),
 
+      this.productRecommendation(0);
       (0, _request.default)({
         url: '/mall-portal/home/productCateList/' + 0,
         method: 'get',
         success: function success(res) {
-          _that.categoryList = res.data.data;
+          _that.categoryList = res.data.data; //首页icon图标
         } });
 
+    },
+    // 发现好物请求
+    productRecommendation: function productRecommendation(page) {
+      var _that = this;
+      _that.pageNum = page;
+      // 当pageNum为0的时候，加载
+      if (_that.pageNum == 0) {
+        _that.last = false;
+        _that.pageNum = 0;
+        _that.productList = [];
+      }
+      // // 最后一页就停止操作
+      if (_that.last) {
+        return false;
+      }
+      uni.showLoading({
+        title: '加载中...' });
+
+      (0, _request.default)({
+        url: '/mall-portal/home/recommendProductList?pageNum=' + _that.pageNum + '&pageSize=6',
+        method: 'get',
+        success: function success(res) {
+          uni.hideLoading();
+          var resData = res.data.data;
+          console.log(resData);
+          // 假设页数为最大是，停止加载
+          if (res.data.data.isLastPage == true) {
+            _that.last = true;
+          }
+          console.log(resData);
+          var productListRes = null;
+          if (_that.pageNum == 0) {
+            productListRes = resData.list;
+          } else {
+            productListRes = _that.productList;
+            productListRes = productListRes.concat(resData.list);
+          }
+          _that.productList = productListRes;
+          _that.pageNum += 1;
+        } });
 
     },
     //商品跳转

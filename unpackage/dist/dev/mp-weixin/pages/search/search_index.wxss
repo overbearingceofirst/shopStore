@@ -272,8 +272,7 @@ page {
   width: 48%;
   background-color: #fff;
   margin: 0 0 15rpx 0;
-  -webkit-box-shadow: 0rpx 5rpx 25rpx rgba(0, 0, 0, 0.1);
-          box-shadow: 0rpx 5rpx 25rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0rpx 5rpx 25rpx rgba(0, 0, 0, 0.1);
 }
 .goods-list .product-list .product image {
   width: 100%;

@@ -37,7 +37,6 @@ page {
   width: 100%;
   height: 14vh;
   text-align: center;
-  background: -webkit-gradient(linear, left top, right top, from(#FFB646), to(#FE9C2D));
   background: -webkit-linear-gradient(left, #FFB646 0%, #FE9C2D 100%);
   background: linear-gradient(left, #FFB646 0%, #FE9C2D 100%);
   color: #FFFFFF;
