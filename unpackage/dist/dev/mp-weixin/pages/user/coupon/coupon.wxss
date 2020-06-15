@@ -229,6 +229,7 @@ page {
 .goods-list .row .goods-info .img image {
   width: 22vw;
   height: 22vw;
+  position: relative;
 }
 .goods-list .row .goods-info .info {
   width: 100%;

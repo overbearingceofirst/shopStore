@@ -97,7 +97,7 @@
 							<img :src= "designateProduct.picSKU == undefined ? mastPic : designateProduct.picSKU" alt="" style="width: 100%;height: 100%;">
 						</view>
 						<view class="specs">
-							<view class="price">￥{{designateProduct.price == undefined ? scopePrice :designateProduct.price}}</view>
+							<view class="price">{{designateProduct.price == undefined ? scopePrice :designateProduct.price}}</view>
 							<view class="spec">已选规格:<span v-for="(item,index) in selectArr" :key="index" style="margin-left: 20upx;">{{item}}</span></view>
 							<view class="num">库存:{{stock == '' ? goodsData.stock : stock}}件</view>
 						</view>
@@ -107,7 +107,7 @@
 							{{item.title}}
 						</view>
 						<view class="sp">
-							<view v-for="(item1,index1) in item.arr" :class="[index+'-'+index1==selectSpec?'on':'']" @tap="setSelectSpec(index,index1,item.arr)" :key="index">{{item1}}</view>
+							<view v-for="(item1,index1) in item.arr" :class="{on:goodsData1.spec[index].isSever[index1]}" @tap="setSelectSpec(index,index1,item.arr)" :key="index1">{{item1}}</view>
 						</view> 
 					</view>
 					<view class="length" v-if="selectSpec!=null">
@@ -165,7 +165,9 @@
 						<button class="btn" open-type="share">分享</button>
 					</view>
 				</view>
-				<view class="price">￥{{goodsData.price != undefiend ? goodsData.price : '暂无数据'}}</view>
+				<view class="price" v-if="priceArr[0] == undefiend">暂无数据</view>
+				<view class="price" v-if="priceArr.length-1>1">{{priceArr[0]}}-{{priceArr[priceArr.length-1]}}<view class="priceCss">积分</view></view>
+				<view class="price" v-if="priceArr.length-1 == 0">{{priceArr[0]}}<view class="priceCss">积分</view></view>
 				<view class="other">
 					<!-- <view>快递:0~60</view> -->
 					<view>库存:{{goodsData.stock != undefiend ? goodsData.stock : '暂无数据'}}</view>
@@ -226,7 +228,7 @@
 		<!-- 详情 -->
 		<view class="description">
 			<view class="title">———— 商品详情 ————</view>
-			<view class="content"><rich-text :nodes="goodsData.detailMobileHtml"></rich-text></view>
+			<view class="content"><rich-text style="width:100%" :nodes="goodsData.detailMobileHtml"></rich-text></view>
 		</view>
 	</view>
 </template>
@@ -283,7 +285,8 @@ export default {
 			isKeep:'',//收藏
 			mastPic:'',//商品主图
 			stock:'',
-			changeId:''
+			changeId:'',
+			priceArr:[]//价钱数组
 		};
 	},
 	onLoad(option) {
@@ -294,6 +297,7 @@ export default {
 		this.changeId = option.Pid
 		setTimeout(() => {
 			this.isCollection(option.id)
+			this.browseHistory(option.id)
 			if(option.spec && option.stock){
 				var arr = option.spec.split(",")
 				for(var i=0;i<arr.length;i++){
@@ -303,7 +307,7 @@ export default {
 				this.specClass = 'show'
 				this.joinTitle = '修改规格'
 			}
-		},500)
+		},1000)
 		// // #ifdef MP
 		// //小程序隐藏返回按钮
 		// this.showBack = false;
@@ -416,7 +420,7 @@ export default {
 						setTimeout(() =>{
 							uni.showToast({
 								title:'收藏商品成功',
-								icon:'success'
+								icon:'none'
 							})
 						},300)
 					},
@@ -427,7 +431,6 @@ export default {
 					url:`/mall-portal/member/collection/deleteProduct?memberId=${_that.userInfo.id}&productId=${_that.goodsData.id}`,
 					method:'POST',
 					success(res){
-						console.log(res)
 						_that.isKeep = _that.isKeep?false:true;
 						setTimeout(() =>{
 							uni.showToast({
@@ -463,6 +466,7 @@ export default {
 		toConfirmation(){
 			let tmpList=[];
 			let goods = {id:this.goodsData.id,img:'../../static/img/goods/p1.jpg',name:this.goodsData.name,spec:'规格:'+this.goodsData.spec[this.selectSpec],price:this.goodsData.price,number:this.goodsData.number};
+			console.log(goods)
 			tmpList.push(goods);
 			uni.setStorage({
 				key:'buylist',
@@ -490,15 +494,21 @@ export default {
 				allSpec.forEach((item,index) => {
 				array.push(item.value)
 				})
+				// 放进空字符窜
 				if(this.selectAlls.toString().indexOf(array.toString()) === -1){
 					this.selectAlls.push(array)
 				}
 			}
-			console.log(this.selectArr)
+			// 按钮样式选择
+			for(let p = 0;p<this.goodsData1.spec[index].isSever.length;p++){
+				this.goodsData1.spec[index].isSever[p]=false
+			}
+			this.goodsData1.spec[index].isSever[index1]=true
+			this.goodsData1.spec = Object.assign({}, this.goodsData1.spec)
 			// 所选规格和所有规格进行匹配
 			for(var k=0;k<this.selectAlls.length;k++){
 				if(this.selectAlls[k].toString() === this.selectArr.toString()){
-					this.designateProduct =  this.specList[k]
+					this.designateProduct =  this.specList[k]//库存
 					this.stock = this.designateProduct.stock
 				}
 			}
@@ -556,7 +566,6 @@ export default {
 		},
 		//服务弹窗
 		showService() {
-			console.log('show');
 			this.serviceClass = 'show';
 		},
 		//关闭服务弹窗
@@ -568,7 +577,6 @@ export default {
 		},
 		//规格弹窗
 		showSpec(fun) {
-			console.log('show');
 			this.specClass = 'show';
 			this.specCallback = fun;
 		},
@@ -600,24 +608,23 @@ export default {
 					method:'POST',
 					data:{
 						"productId":_that.designateProduct.id,
-						 "productSkuId":_that.designateProduct.skuId,
-						 "quantity":_that.amount,
-						 "price":_that.designateProduct.price,
-						 "productPic":_that.designateProduct.picSKU == undefined ? '' :_that.designateProduct.picSKU,
-						 "productName":_that.designateProduct.name,
-						 "productSubTitle":_that.designateProduct.subTitle,
-						 "productSkuCode":_that.designateProduct.skuCode,
-						 "productCategoryId":_that.designateProduct.productCategoryId,
-						 "productBrand":_that.designateProduct.brandName,
-						 "productSn":_that.designateProduct.productSn,
-						 "productAttr":_that.designateProduct.spData
+						"productSkuId":_that.designateProduct.skuId,
+						"quantity":_that.amount,
+						"price":_that.designateProduct.price,
+						"productPic":_that.designateProduct.picSKU == undefined ? '' :_that.designateProduct.picSKU,
+						"productName":_that.designateProduct.name,
+						"productSubTitle":_that.designateProduct.subTitle,
+						"productSkuCode":_that.designateProduct.skuCode,
+						"productCategoryId":_that.designateProduct.productCategoryId,
+						"productBrand":_that.designateProduct.brandName,
+						"productSn":_that.designateProduct.productSn,
+						"productAttr":_that.designateProduct.spData
 					},
 					success(res){
 						uni.showLoading({
 							title:'提交中'
 						})
 						setTimeout(() => {
-							console.log(_that.designateProduct)
 							uni.hideLoading()
 							uni.showToast({
 								title:'加入购物车成功',
@@ -661,7 +668,6 @@ export default {
 							title:'提交中'
 						})
 						setTimeout(() => {
-							console.log(_that.designateProduct)
 							uni.hideLoading()
 							uni.showToast({
 								title:'修改规格成功正在为您跳转至之前页面',
@@ -733,15 +739,52 @@ export default {
 				}
 			})
 		},
+		// 增加浏览记录
+		browseHistory(id){
+			var time = (new Date()).valueOf();
+			const _that = this
+			const Pid = id
+			let obj = {
+					id:_that.goodsData.id,//id
+					memberId:_that.userInfo.id,//会员id
+					memberNickname: _that.userInfo.nickname,//会员名字
+					memberIcon: _that.goodsData.picSKU,//会员标识
+					productId:_that.goodsData.id,//产品id
+					productName:_that.goodsData.name,//产品名字
+					productPic:_that.mastPic,
+					productSubTitle:_that.goodsData.subTitle,
+					productPrice:_that.goodsData.price,
+					createTime: time,//创建时间
+				}
+			console.log(obj)
+			request({
+				url:'/mall-portal/member/readHistory/create',
+				method:'POST',
+				data:{
+					id:_that.goodsData.id,//id
+					memberId:_that.userInfo.id,//会员id
+					memberNickname: _that.userInfo.nickname,//会员名字
+					memberIcon: _that.goodsData.picSKU,//会员标识
+					productId:_that.goodsData.id,//产品id
+					productName:_that.goodsData.name,//产品名字
+					productPic:_that.mastPic,
+					productSubTitle:_that.goodsData.subTitle,
+					productPrice:_that.goodsData.price,
+					createTime: time,//创建时间
+				},
+				success(res){
+					console.log(res,"浏览接口")
+				}
+			})
+		},
 		getDetail(id){
 			const _that = this
 			const Pid = id
 			request({
 				url:'/mall-portal/portalproducts/selectdetails/' + Pid,
-				method:'POST',
+				method:'GET',
 				success(res){
 					let data = res.data.data
-					console.log(data)
 					// 参数设置
 					_that.goodsData1.parameter = data.parameter
 					// 轮播图设置
@@ -751,39 +794,60 @@ export default {
 					var newImg = []
 					var spName = []
 					var spValue = []
-					const firstP = JSON.parse(data.productResult[0].spData)
-					_that.specList = data.productResult
-					_that.goodsData = data.productResult[0]
-					// 服务参数
-					_that.goodsData.serviceIds = data.productResult[0].serviceIds.split(',')
-					// console.log(_that.goodsData)
-					// 轮播图
-					for (let i of imgs) { newImg.push({src:i}) }
-					_that.mastPic = data.picMap.pic
-					newImg.unshift({src:data.picMap.pic})
-					_that.swiperList = newImg
-					// 商品标题相关数据
-					for (let i of firstP) {
-						var sN = new Object()
-						sN.title = i.key
-						sN.arr = []
-						spName.push(sN)
-						// 获取所有商品的规格属性
-						for (let g of spData) {
-							const keys = JSON.parse(g.spData)
-							for (let y of keys) {
-								if(y.key === sN.title){
-									if(sN.arr.indexOf(y.value)=== -1){
-										sN.arr.push(y.value)
+					if(data.productResult[0].spData){
+						const firstP = JSON.parse(data.productResult[0].spData)
+						// 商品标题相关数据
+						for (let i of firstP) {
+							var sN = new Object()//{}
+							sN.title = i.key//key
+							sN.arr = []
+							sN.isSever = []
+							spName.push(sN)
+							// 获取所有商品的规格属性
+							for (let g of spData) {
+								const keys = JSON.parse(g.spData)
+								for (let y of keys) {
+									if(y.key === sN.title){
+										if(sN.arr.indexOf(y.value)=== -1){
+											sN.arr.push(y.value)
+											sN.isSever.push(false)
+										}
 									}
 								}
 							}
 						}
 					}
+					
+					_that.specList = data.productResult
+					_that.goodsData = data.productResult[0]
+					// 获取最大最小价格
+					for(let m =0;m<data.productResult.length;m++){
+						if(data.productResult[m].price){
+							_that.priceArr.push(data.productResult[m].price)
+						}
+					}
+					_that.priceArr.sort(function (a, b) {
+						return a-b;
+					});
+					console.log(_that.priceArr)
+					// 服务参数
+					_that.goodsData.serviceIds = data.productResult[0].serviceIds.split(',')
+					// 轮播图
+					for (let i of imgs) { newImg.push({src:i}) }
+					_that.mastPic = data.picMap.pic
+					newImg.unshift({src:data.picMap.pic})
+					_that.swiperList = newImg
 					_that.goodsData1.spec = spName
 					_that.goodsData1.spec.map(item => {
 						_that.selectArr.push('');
 					});
+					// 把图片变成自适应
+					_that.goodsData.detailMobileHtml=_that.goodsData.detailMobileHtml.replace(/<p>/ig, '<p style="font-size: 15px; line-height: 25px;">')
+					.replace(/<img([\s\w"-=\/\.:;]+)((?:(height="[^"]+")))/ig, '<img$1')
+					.replace(/<img([\s\w"-=\/\.:;]+)((?:(width="[^"]+")))/ig, '<img$1')
+					.replace(/<img([\s\w"-=\/\.:;]+)((?:(style="[^"]+")))/ig, '<img$1')
+					.replace(/<img([\s\w"-=\/\.:;]+)((?:(alt="[^"]+")))/ig, '<img$1')
+					.replace(/<img([\s\w"-=\/\.:;]+)/ig, '<img style="width: 100%;" $1');
 				},
 				fail(){
 					uni.showToast({
@@ -1171,6 +1235,9 @@ page {
 		align-items: center;
 		font-size: 26upx;
 		color: #999;
+		.wsncph {
+			width: 100%!important;
+		}
 	}
 }
 .footer {
@@ -1189,6 +1256,8 @@ page {
 		display: flex;
 		height: 80upx;
 		margin-left: -4%;
+		justify-content: space-around;
+		width: 46%;
 		.box {
 			width: 80upx;
 			height: 80upx;
@@ -1261,6 +1330,8 @@ page {
 		.content {
 			width: 100%;
 			padding: 20upx 0;
+			overflow: auto;
+			height: 696upx;
 		}
 		.btn {
 			width: 100%;
@@ -1573,6 +1644,11 @@ page {
 			color: #909090;
 		}
 	}
+}
+.priceCss{
+	display: inline;
+	font-size: 28upx;
+	margin-left: 5upx;
 }
 .specStyle{
 	width: 100%;

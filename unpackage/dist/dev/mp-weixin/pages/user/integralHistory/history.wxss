@@ -71,8 +71,7 @@ page {
   height: 120rpx;
   background-color: #FFFFFF;
   margin: 20rpx auto;
-  -webkit-box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
-          box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;

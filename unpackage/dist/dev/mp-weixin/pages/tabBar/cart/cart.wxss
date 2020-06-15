@@ -120,8 +120,7 @@ page {
   height: calc(22vw + 40rpx);
   margin: 20rpx auto;
   border-radius: 15rpx;
-  -webkit-box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
-          box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0rpx 5rpx 20rpx rgba(0, 0, 0, 0.1);
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;

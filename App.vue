@@ -1,13 +1,14 @@
 <script>
 	export default {
 		globalData:{
-			requestApi:'http://192.168.1.105:8201',
+			requestApi:'http://49fzbm.natappfree.cc',
 			userID:''
 		},
 		onLaunch: function () {
 			uni.getStorage({
 				key:'userMessage',
 				success(res){
+					console.log(res)
 					getApp().globalData.userID=res.data.id
 				}
 			})
